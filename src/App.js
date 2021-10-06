@@ -58,6 +58,12 @@ function App(){
                     creator: action.creator
                 }
                 return [newToDo, ...state]
+	    /*
+	     case 'DELETE_TODO': {
+	     	const updatedList = state.filter(todo => todo.id != action.id)
+		return updatedList
+	    */
+			
             default:
                 throw new Error()
         }
