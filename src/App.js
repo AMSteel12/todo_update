@@ -1,14 +1,52 @@
-import {/*useState,*/ useReducer} from 'react'
-import AppUserBar from './UserInfo/AppUserBar'
-import CreateTodoItem from './CreateTodoItem'
-import TodoList from './TodoList'
-//import react from 'react'
+import React, {useReducer, useEffect, useState} from 'react';
+import {useResource} from 'react-request-hook';
+import AppUserBar from './UserInfo/AppUserBar';
+import CreateTodoItem from './CreateTodoItem';
+import TodoList from './TodoList';        
+import appReducer from './reducers';
+import Header from './Header';
+import ChangeTheme from './ChangeTheme';
+import {ThemeContext, StateContext} from './Contexts';
+//import react from 'react';
 
 function App(){
 
     //const [user, setUser] = useState('')
 
+    const [todos, getTodos] = useResource(() => ({
+        url: '/todos',
+        method: 'get'
+    }) 
+    );
 
+    /*
+    const deleteTodos = useResource((id) => ({
+        url:'/todos/${id}',
+        method: 'delete'
+    })
+    )
+    */
+
+    const [state, dispatch] = useReducer(appReducer, {user: '', todos:[], theme:{}})
+
+    useEffect(getTodos, [])
+
+    useEffect(() => {
+        if (todos && todos.data) {
+            dispatch({type: 'FETCH_TODOS', todos: todos.data})
+        }
+    }, [todos]);
+
+
+    const {user} = state;
+
+    const [theme, setTheme] = useState({
+        primaryColor: 'dodgerblue',
+        secondaryColor: 'darkorange'
+     })
+
+  // Removing initialTodos from HW #2
+/*
     const initialTodos = [
 	{
 	    title:"Todo item #1", 
@@ -34,9 +72,14 @@ function App(){
             dateCompleted:"{dateCompleted}"
 	}
     ]
+    */
+
    
   //  const [todos, setTodos] = useState(initialTodos)      see useReducer below
 
+
+  /*
+    // moved to ./reducers
     function userReducer (state, action) {
         switch (action.type) {
             case 'LOGIN':
@@ -51,40 +94,55 @@ function App(){
 
     function todosReducer (state, action) {
         switch (action.type) {
-            case 'CREATE_TODO':
+            case 'CREATE_TODO': {
                 const newToDo = {
                     title: action.title,
                     description: action.description,
                     creator: action.creator
+
                 }
                 return [newToDo, ...state]
-	    /*
-	     case 'DELETE_TODO': {
-	     	const updatedList = state.filter(todo => todo.id !== action.id)
-		return updatedList
-		}
-	    */
-			
+            }
+
+            case 'TOGGLE_TODO':
+                return state.map((t, i) => {
+                    if(i === action.postId) {
+                        t.complete = action.complete;
+                        t.completedDate = Date.now();
+                        console.log(t)
+                    }
+                    return t;
+                })
+
+            case 'DELETE_TODO': {
+                return state.filter((t,i) => i !== action.todoId)
+            }
+            
             default:
-                throw new Error()
+                return state
         }
     }
+    */
 
-    const [user, dispatchUser] = useReducer(userReducer, '')
+   // const [user, dispatchUser] = useReducer(userReducer, '')
 
-    const [ todos, dispatchToDos] = useReducer(todosReducer, initialTodos)
+   // const [ todos, dispatchToDos] = useReducer(todosReducer, initialTodos)
 
   
-
-    return (
-       <div>
-         <AppUserBar user={user} dispatchUser={dispatchUser} />
-       <br/><br/><hr/><br/><br/>
-	     {user && <CreateTodoItem user={user} dispatch={dispatchToDos}/>}
-	     <TodoList todos={todos} />  
-       </div>
-    )	    	
+   return (
+    <div>
+      <ThemeContext.Provider value={theme}>
+        <StateContext.Provider value={{state: state, dispatch: dispatch}}>
+          <Header text="To-Do Items" />
+          <ChangeTheme theme={theme} setTheme={setTheme} />
+          <AppUserBar />
+          <br/><br/><hr/><br/> 
+          {user && <CreateTodoItem /> }
+          <TodoList />
+        </StateContext.Provider>
+      </ThemeContext.Provider>
+    </div>
+  )
 }
 
- 
 export default App;
