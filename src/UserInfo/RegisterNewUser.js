@@ -1,34 +1,53 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
+import {useContext} from 'react/cjs/react.development'
+import {useResource} from 'react-request-hook';
+import {StateContext} from '../Contexts'
 
-export default function RegisterNewUser( {dispatchUser}) {
+export default function RegisterNewUser() { //{dispatchUser}) {
+
+	const {dispatch} = useContext(StateContext)
 
 	const [formData, setFormData] = useState( {
-		userID: "",
-		userPassword: "",
-		repeatInputPassword: ""
+		username: '',
+		password: '',
+		repeatPassword: ''
 	}
 	)
+
+	const [user, register] = useResource((username, password) => ({
+		url: '/users',
+		method: 'post',
+		data: {username, password}
+	  }))
+
+
+	useEffect(() => {
+		if (user && user.data) {
+			dispatch({type: 'REGISTER', username: user.data.username })
+		}
+	  }, [user])
 
 	//const [userID, setUserID] = useState('')
 	//const [userPassword, setUserPassword] = useState('')
 	//const [repeatInputPassword, setRepeatInputPassword] = useState('')
 
-	//function handleUserID (evt) {setUserID(evt.target.value)}
-	//function handleUserPassword (evt) {setUserPassword(evt.target.value)}
-	//function handleRepeatInputPassword (evt) {setRepeatInputPassword(evt.target.value)}
+	function handleUserID (evt) {setFormData({...formData, username: evt.target.value});}
+	function handleUserPassword (evt) {setFormData({...formData, password: evt.target.value});}
+	function handleRepeatInputPassword (evt) {setFormData({...formData, repeatPassword: evt.target.value});}
+	
 
     return (
-	    <form onSubmit={evt => {evt.preventDefault(); dispatchUser({type:"REGISTER", username: formData.userID}); }}  >
+	    <form onSubmit={evt => {evt.preventDefault(); register(formData.username, formData.password);}}>
 	        <label htmlFor="register-userid">User ID:</label>
-	        <input type="text" value={formData.userID} onChange={evt => setFormData({...formData, userID: evt.target.value})} name="register-userid" id="register-userid" />
+	        <input type="text" value={formData.username} onChange={handleUserID} name="register-userid" id="register-userid" />
 	
 	        <label htmlFor="register-password">Password:</label>
-	        <input type="password" value={formData.userPassword} onChange={evt => setFormData({...formData, userPassword: evt.target.value})} name="register-password" id="register-password" />
+	        <input type="password" value={formData.password} onChange={handleUserPassword} name="register-password" id="register-password" />
 
-	        <label htmlFor="register-password-again"> Please enter password again:</label>
-	        <input type="password" value={formData.repeatInputPassword} onChange={evt => setFormData({...formData, repeatInputPassword: evt.target.value})} name="register-password-again" id="register-password-again" />
+	        <label htmlFor="register-password-again"> Please enter password again to confirm:</label>
+	        <input type="password" value={formData.repeatPassword} onChange={handleRepeatInputPassword} name="register-password-again" id="register-password-again" />
   
-	        <input type="submit" value="Signup!" disabled={formData.userID.length === 0 || formData.userPassword.length === 0 || formData.userPassword !== formData.repeatInputPassword} />
+	        <input type="submit" value="Signup" disabled={formData.username.length === 0 || formData.password.length === 0 || formData.password !== formData.repeatPassword} />
 	    </form>
     )
 }
