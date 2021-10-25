@@ -1,0 +1,51 @@
+{
+  "todos": [
+    {
+      "title": "ABC News",
+      "description": "Record",
+      "createdDate": 1635164974020,
+      "completeStatus": true,
+      "completedDate": 1635165000099,
+      "id": 2
+    }
+  ],
+  "users": [
+    {
+      "id": 1,
+      "username": "aaron",
+      "password": "mypassword"
+    },
+    {
+      "username": "anonymous",
+      "password": "secretpassword",
+      "id": 2
+    },
+    {
+      "username": "Aaron",
+      "password": "1234",
+      "id": 3
+    },
+    {
+      "username": "AaronM",
+      "password": "newpassword",
+      "id": 4
+    }
+  ],
+  "themes": [
+    {
+      "id": 4,
+      "primaryColor": "dodgerblue",
+      "secondaryColor": "darkorange"
+    },
+    {
+      "id": 5,
+      "primaryColor": "forestgreen",
+      "secondaryColor": "firebrick"
+    },
+    {
+      "id": 6,
+      "primaryColor": "indigo",
+      "secondaryColor": "lightsalmon"
+    }
+  ]
+}
