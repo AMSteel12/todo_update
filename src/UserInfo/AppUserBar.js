@@ -19,10 +19,11 @@ export default function AppUserBar(){  //user, dispatchUser}) {
     else {
 		return (
 	    	<>
-			  <Login />					
+			  <Login />		
+			  <br />
+			  <br />			
 			  <RegisterNewUser />	
 			</>
 		)
     }
 }
-    

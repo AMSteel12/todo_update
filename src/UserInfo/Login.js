@@ -17,7 +17,7 @@ export default function Login() { 		//{dispatchUser} ) {
 	const [user, login] = useResource(() => ({
         url: `/login/${encodeURI(username)}/${encodeURI(password)}`,
         method: 'get'
-    }))
+    }));
 
 	useEffect(() => {
         if (user && user.data) {
@@ -31,7 +31,7 @@ export default function Login() { 		//{dispatchUser} ) {
     }, [user]);
 
     return (
-					// removed dispatch({type:"LOGIN", username});}}>
+					// removed dispatch({type:"LOGIN", username});}}> Check is username/password in db.json
 	    <form onSubmit={evt => {evt.preventDefault(); login(); }}> 
 	        <label htmlFor="login">User ID:</label>
 	        <input type="text" value={username} onChange={handleUsername} name="login-userid" id="login-userid" />
