@@ -2,14 +2,14 @@ import React, {useContext, useEffect} from 'react'
 import {useResource} from 'react-request-hook';
 import {ThemeContext, StateContext} from './Contexts'
 
-export default function TodoItem({title, description, createdDate, completeStatus, completedDate, id}) {
+export default function TodoItem({title, description, completeStatus, completedDate, id}) {
 
     // Removed static completed items from HW 2
    // const dateCreated = new Date().toDateString();
    // const dateCompleted = new Date().toDateString();
 
-   const {secondaryColor} = useContext(ThemeContext)
-   const {dispatch} = useContext(StateContext)
+   const {secondaryColor} = useContext(ThemeContext);
+   const {dispatch} = useContext(StateContext);
 
    const [todo, deleteTodo] = useResource(() => ({
     url: `/todos/${id}`,
@@ -17,7 +17,7 @@ export default function TodoItem({title, description, createdDate, completeStatu
   }));
 
 
-  const [editTodo, toggleTodo] = useResource(({completeStatus, completedDate}) => ({
+  const [doneTodo, toggleTodo] = useResource(({completeStatus, completedDate}) => ({
     url: `/todos/${id}`,
     method: 'patch',
     data: {completeStatus, completedDate},
@@ -32,21 +32,21 @@ export default function TodoItem({title, description, createdDate, completeStatu
   [todo]);
 
   useEffect(() => {
-    if (editTodo && editTodo.data) {
+    if (doneTodo && doneTodo.data) {
       dispatch({
         type: 'TOGGLE_TODO',
-        id: editTodo.data.id,
-        completeStatus: editTodo.data.completeStatus,
-        completedDate: editTodo.data.completedDate,
+        id: doneTodo.data.id,
+        completeStatus: doneTodo.data.completeStatus,
+        completedDate: doneTodo.data.completedDate,
       });
     }
   }, 
-  [editTodo]);
+  [doneTodo]);
 
 
   function handleDeleteTodo () {
 	deleteTodo();
-}
+};
 
    function handleCheckedItem (evt) {
       let dateTimeHolder = null;
@@ -64,14 +64,16 @@ export default function TodoItem({title, description, createdDate, completeStatu
 	//Updated from HW 3 with adding TOGGLE_TODO and DELETE_TODO
     return (
 	    <div>
-          <h3 style={{color: secondaryColor}}>Title: {title}</h3>
-	          <br />
-            <span> <input type="checkbox" checked={completeStatus} onChange={handleCheckedItem} /> </span>
-	        <div>{description}</div>
-	          <br />
-			   <br />  
-			   <button type="button" onClick={handleDeleteTodo}>Delete</button>
-			   <hr/>
-	          <br />   
+             <hr />
+      <span>
+        <input type="checkbox" checked={completeStatus} onChange={handleCheckedItem} />
+        <b>Todo Item: {title}</b>
+      </span>
+      <p>
+        <i>List:  {description}</i>
+      </p>
+        <p>The todo item created on: {new Date().toDateString()}</p>
+         {completedDate && <p>Task completed on: {new Date(completedDate).toDateString()}</p>}
+			   <button type="button" onClick={handleDeleteTodo}>Delete item</button>
 	    </div>   )
 }

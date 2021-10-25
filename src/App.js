@@ -132,7 +132,7 @@ function App(){
    return (
     <div>
       <ThemeContext.Provider value={theme}>
-        <StateContext.Provider value={{state: state, dispatch: dispatch}}>
+        <StateContext.Provider value={{state, dispatch}}>
           <Header text="To-Do Items" />
           <ChangeTheme theme={theme} setTheme={setTheme} />
           <AppUserBar />

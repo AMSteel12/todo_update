@@ -1,10 +1,13 @@
 function userReducer (state, action) {
     switch (action.type) {
         case 'LOGIN':
+
         case 'REGISTER':
             return action.username;
+
         case 'LOGOUT':
             return '';
+            
         default:
             return state;
     }
@@ -14,26 +17,22 @@ function todosReducer (state, action) {
     switch (action.type) {
         case 'CREATE_TODO': { 
 
-              // Handling duplication issue for multiple todos
-            const filterTodo = state.filter((t) => t.id === action.newTodo.id);
-            if (filterTodo.length === 0) {
-                return [action.newTodo, ...state];
-            }
-            return state;
+              // Handling duplication issue for re-populatings todos
+                return [action.newTodoItem, ...state];
         }
      
-        case 'TOGGLE_TODO':
-            return state.map((t, i) => {
-                if(i === action.id) {
-                    t.completeStatus = action.completeStatus;
-                    t.completedDate = action.completedDate;
+        case 'TOGGLE_TODO': {
+            return state.map((todo) => {
+                if(todo.id === action.id) {
+                    todo.completeStatus = action.completeStatus;
+                    todo.completedDate = action.completedDate;
                     //console.log(t)
                 }
-                return t;
-            })
+                return todo;
+            });}
 
         case 'DELETE_TODO':
-            return state.filter((t,i) => i !== action.id)
+            return state.filter((t) => t.id !== action.id)
 
         case 'FETCH_TODOS':
             return action.todos
