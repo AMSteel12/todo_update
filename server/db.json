@@ -19,16 +19,6 @@
       "username": "anonymous",
       "password": "secretpassword",
       "id": 2
-    },
-    {
-      "username": "Aaron",
-      "password": "1234",
-      "id": 3
-    },
-    {
-      "username": "AaronM",
-      "password": "newpassword",
-      "id": 4
     }
   ],
   "themes": [
