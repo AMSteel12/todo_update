@@ -1,16 +1,15 @@
-import React from 'react'
+import React, {useContext} from 'react'
 import TodoItem from './TodoItem'
 import {StateContext} from './Contexts'
-import {useContext} from 'react/cjs/react.development'
 
 
-export default function TodoList () { //({todos = []}) {
+export default function TodoList () {         //({todos = []}) {
     const {state} = useContext(StateContext);
     const {todos} = state;
 
     return (
       <div>
-	      {todos.map((todo) => (<TodoItem key={todo.id} {...todo} /> ))}
+       {todos.map((t, i) => <TodoItem {...t} short={true} title={t.title} author={t.author} key={'todo-' + i} todoId={t.id}/>)}
       </div>
     )
 }

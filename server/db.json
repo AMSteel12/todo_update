@@ -1,26 +1,7 @@
 {
-  "todos": [],
+  "todos": [
+  ],
   "users": [
-    {
-      "id": 1,
-      "username": "aaron",
-      "password": "mypassword"
-    },
-    {
-      "username": "Superman",
-      "password": "clarkkent",
-      "id": 2
-    },
-    {
-      "username": "AaronM",
-      "password": "newpassword",
-      "id": 3
-    },
-    {
-      "username": "Batman",
-      "password": "brucewayne",
-      "id": 4
-    }
   ],
   "themes": [
     {

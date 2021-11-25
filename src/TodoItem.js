@@ -1,49 +1,58 @@
 import React, {useContext, useEffect} from 'react'
 import {useResource} from 'react-request-hook';
 import {ThemeContext, StateContext} from './Contexts'
+import {Link} from 'react-navi'
+import {Card, Button} from 'react-bootstrap'
 
-export default function TodoItem({title, description, completeStatus, completedDate, id}) {
+
+function TodoItem({title, description, author, completeStatus, completedDate, todoId, short=false}) {
 
     // Removed static completed items from HW 2
    // const dateCreated = new Date().toDateString();
    // const dateCompleted = new Date().toDateString();
 
    const {secondaryColor} = useContext(ThemeContext);
-   const {dispatch} = useContext(StateContext);
+   const {state, dispatch} = useContext(StateContext);
 
-   const [todo, deleteTodo] = useResource(() => ({
-    url: `/todos/${id}`,
+   const [deletedTodo, deleteTodo] = useResource((todoId) => ({
+    url: `/todo/${todoId}`,
     method: 'delete',
+    headers: {Authorization: `${state.user.access_token}`},
   }));
 
 
-  const [doneTodo, toggleTodo] = useResource(({completeStatus, completedDate}) => ({
-    url: `/todos/${id}`,
-    method: 'patch',
-    data: {completeStatus, completedDate},
+  const [toggledTodo, toggleTodo] = useResource((todoId, completed) => ({
+    url: `/todo/${todoId}`,
+    method: 'put',
+    headers: {Authorization: `${state.user.access_token}`},
+    data: {title, description, author, completeStatus:completed, completedDate: Date.now()
+    }
   }));
 
 
   useEffect(() => {
-    if (todo && todo.data !== undefined) {
-      dispatch({type: 'DELETE_TODO', id});
+    if (deletedTodo && deletedTodo.data && deletedTodo.isLoading === false) {
+        dispatch({type: 'DELETE_TODO', todoId: todoId})
     }
-  }, 
-  [todo]);
+}, [deletedTodo])
 
   useEffect(() => {
-    if (doneTodo && doneTodo.data) {
-      dispatch({
-        type: 'TOGGLE_TODO',
-        id: doneTodo.data.id,
-        completeStatus: doneTodo.data.completeStatus,
-        completedDate: doneTodo.data.completedDate,
-      });
+    if (toggledTodo && toggledTodo.data && toggledTodo.isLoading === false) {
+        dispatch({type: 'TOGGLE_TODO', completeStatus:toggledTodo.data.completeStatus, completedDate:toggledTodo.data.completedDate, todoId})
     }
-  }, 
-  [doneTodo]);
+}, [toggledTodo])
 
 
+let processedDescription = description
+
+if (short) {
+  if (description.length > 30) {
+       processedDescription = description.substring(0, 30) + '...'
+  }
+}
+
+
+/*
   function handleDeleteTodo () {
 	deleteTodo();
 };
@@ -59,21 +68,28 @@ export default function TodoItem({title, description, completeStatus, completedD
       }
       toggleTodo({completeStatus: evt.target.checked, completedDate: dateTimeHolder})
    }
+   */
 
 
 	//Updated from HW 3 with adding TOGGLE_TODO and DELETE_TODO
     return (
-	    <div>
-             <hr />
-      <span>
-        <input type="checkbox" checked={completeStatus} onChange={handleCheckedItem} />
-        <b>Todo Item: {title}</b>
-      </span>
-      <p>
-        <i>List:  {description}</i>
-      </p>
-        <p>The todo item created on: {new Date().toDateString()}</p>
-         {completedDate && <p>Task completed on: {new Date(completedDate).toDateString()}</p>}
-			   <button type="button" onClick={handleDeleteTodo}>Delete item</button>
-	    </div>   )
+      <Card>
+          <Card.Body>
+              <Card.Title><Link style={{color: secondaryColor}} href={`/todo/${todoId}`}>{title}</Link>
+              </Card.Title>
+              <Card.Subtitle>
+              <i>Written by: <b>{author}</b></i>
+              </Card.Subtitle>
+              <Card.Text>
+                  {processedDescription}
+              </Card.Text>
+              <input type="checkbox" checked={completeStatus} onChange={e => {toggleTodo(todoId, e.target.checked)}} />
+               <Button variant="link" onClick={(e) => {deleteTodo(todoId)}}>Delete Todo Item</Button>
+              {completeStatus && <i>Completed on: {new Date(completedDate).toLocaleDateString('en-us')}</i>}
+              {short && <Link href={`/todo/${todoId}`}>View full todo item</Link>}
+          </Card.Body>
+          </Card>
+ )
 }
+
+export default React.memo(TodoItem);

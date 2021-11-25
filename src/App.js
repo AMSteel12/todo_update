@@ -1,42 +1,38 @@
 import React, {useReducer, useEffect, useState} from 'react';
-import {useResource} from 'react-request-hook';
-import AppUserBar from './UserInfo/AppUserBar';
-import CreateTodoItem from './CreateTodoItem';
-import TodoList from './TodoList';        
+import {mount, route} from 'navi';
+import {Router, View} from 'react-navi';
+import {Container} from 'react-bootstrap';
 import appReducer from './reducers';
-import Header from './Header';
-import ChangeTheme from './ChangeTheme';
 import {ThemeContext, StateContext} from './Contexts';
-//import react from 'react';
+import CreateTodoItem from './CreateTodoItem';
+import AppUserBar from '../UserInfo'
+import HeaderBar from './pages/HeaderBar';
+import UsersPage from './pages/UsersPage';
+import UserProfilePage from './pages/UserProfilePage';
+import HomePage from './pages/HomePage';
+import TodosListPage from './pages/TodosListPage';
 
 function App(){
 
-    //const [user, setUser] = useState('')
-
+    /*
     const [todos, getTodos] = useResource(() => ({
         url: '/todos',
         method: 'get'
     }) 
     );
-
-    /*
-    const deleteTodos = useResource((id) => ({
-        url:'/todos/${id}',
-        method: 'delete'
-    })
-    )
     */
 
-    const [state, dispatch] = useReducer(appReducer, {user: '', todos:[], theme:{}})
+    const [state, dispatch] = useReducer(appReducer, {user: {}, usersList: [], todos:[]})
 
-    useEffect(getTodos, [])
+    //useEffect(getTodos, [])
 
+    /*
     useEffect(() => {
         if (todos && todos.data) {
             dispatch({type: 'FETCH_TODOS', todos: todos.data})
         }
     }, [todos]);
-
+    */
 
     const {user} = state;
 
@@ -44,6 +40,18 @@ function App(){
         primaryColor: 'dodgerblue',
         secondaryColor: 'darkorange'
      })
+     
+
+    const routes = mount({
+        '/': route({view: <AppUserBar/>}),
+        '/users': route({view: <UsersPage/>}),
+        '/users/:userId': route(req => {
+            console.log(req)
+            return {view: <UserProfilePage userId={req.params.userId}/>}
+        }),
+        })
+
+
 
   // Removing initialTodos from HW #2
 /*
@@ -62,16 +70,7 @@ function App(){
             dateCreated: "{dateCreated}",
             complete:"Completed todo item",
             dateCompleted:"{dateCompleted}"
-	},
-
-	{
-	    title:"Todo item #3", 
-            description:"Description:  Still another new todo description",
-            dateCreated: "{dateCreated}",
-            complete:"Completed todo item",
-            dateCompleted:"{dateCompleted}"
-	}
-    ]
+	}]
     */
 
    
@@ -132,13 +131,14 @@ function App(){
    return (
     <div>
       <ThemeContext.Provider value={theme}>
-        <StateContext.Provider value={{state, dispatch}}>
-          <Header text="To-Do Items" />
-          <ChangeTheme theme={theme} setTheme={setTheme} />
-          <AppUserBar />
-          <br/><br/><hr/><br/> 
-          {user && <CreateTodoItem /> }
-          <TodoList />
+        <StateContext.Provider value={{state: state, dispatch: dispatch}}>
+            <Router routes={routes}>
+                <Container>
+                    <HeaderBar setTheme={setTheme}/>
+                    <hr/>
+                    <View/>
+                </Container>
+                </Router>
         </StateContext.Provider>
       </ThemeContext.Provider>
     </div>
